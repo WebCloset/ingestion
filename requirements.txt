@@ -1,0 +1,9 @@
+
+
+# Core dependencies for ingestion pipeline
+
+psycopg2-binary        # Postgres client for Neon
+requests               # For eBay API calls
+python-dotenv          # Load environment variables from .env
+elasticsearch>=8       # Elasticsearch client
+tenacity               # Retry logic for API calls
