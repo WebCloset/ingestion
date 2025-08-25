@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "analysis": {
+      "normalizer": {
+        "lc": { "type": "custom", "filter": ["lowercase"] }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id":          { "type": "keyword" },
+      "marketplace": { "type": "keyword" },
+      "title":       { "type": "text" },
+      "brand":       { "type": "keyword", "normalizer": "lc" },
+      "condition":   { "type": "keyword" },
+      "price_cents": { "type": "integer" },
+      "currency":    { "type": "keyword" },
+      "image_url":   { "type": "keyword", "index": false },
+      "seller_urls": { "type": "keyword" },
+      "updated_at":  { "type": "date" },
+      "category":    { "type": "keyword" },
+      "size":        { "type": "keyword" },
+      "listed_at":   { "type": "date" },
+      "popularity_score": { "type": "float" },
+      "seller_id":   { "type": "keyword" }
+    }
+  }
+}
