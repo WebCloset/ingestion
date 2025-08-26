@@ -7,7 +7,7 @@ dotenv.config();
 
 const file = process.argv[2];
 if (!file) {
-  console.error("Usage: node scripts/import-items.js <path-to-json>");
+  console.error("Usage: node ebay/scripts/import-items.js <path-to-json>");
   process.exit(1);
 }
 const raw = fs.readFileSync(file, "utf8");
