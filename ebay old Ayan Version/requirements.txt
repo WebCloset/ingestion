@@ -1,5 +1,0 @@
-requests
-psycopg2-binary
-python-dotenv
-feedparser
-beautifulsoup4
