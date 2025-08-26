@@ -1,5 +1,3 @@
-
-
 # Core dependencies for ingestion pipeline
 
 psycopg2-binary        # Postgres client for Neon
