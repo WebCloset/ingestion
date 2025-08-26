@@ -51,6 +51,7 @@ def test_ebay_api():
     print("\n🔍 Testing eBay API connection...")
     
     try:
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
         from ebay.fetch_ebay import EbayFetcher
         fetcher = EbayFetcher()
         
@@ -85,7 +86,7 @@ def main():
     print("\n" + "="*50)
     if success:
         print("🎉 All tests passed! Ready to run the fetcher.")
-        print("\nNext step: python ebay/fetch_ebay.py")
+        print("\nNext step: python -m ebay.fetch_ebay")
     else:
         print("❌ Fix the issues above first.")
     print("="*50)
