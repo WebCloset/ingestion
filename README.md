@@ -15,12 +15,6 @@ ingestion/
   ebay/
     fetch_ebay.py            # Fetches fashion items from eBay API, upserts into item_source
     token.py                 # Gets and caches eBay API OAuth token
-<<<<<<< HEAD
-  reverb/
-    fetch_reverb.py          # Fetches listings from Reverb API, upserts into item_source
-    reverb_auth.py           # Bearer token from env for Reverb API
-=======
->>>>>>> d3068d77a1a0f40018644fcad4068c00ef670d46
   search/
     mappings/products.json   # Elasticsearch mapping for products index
     indexer.py               # Reads from item_source and writes docs to Elasticsearch
@@ -44,10 +38,6 @@ ingestion/
    EBAY_APP_ID=<client_id>
    EBAY_CERT_ID=<client_secret>
    EBAY_ENV=PRODUCTION
-<<<<<<< HEAD
-   REVERB_BEARER_TOKEN=<reverb_api_bearer_token>   # for Reverb fetcher
-=======
->>>>>>> d3068d77a1a0f40018644fcad4068c00ef670d46
    ELASTICSEARCH_URL=...
    ES_API_KEY=...
    ELASTICSEARCH_INDEX=products
@@ -58,16 +48,9 @@ ingestion/
    psql "$DATABASE_URL" -f db/schema.sql
    ```
 
-<<<<<<< HEAD
-4. **Run fetchers** (eBay and/or Reverb)
-   ```bash
-   python -m ebay.fetch_ebay
-   python -m reverb.fetch_reverb
-=======
 4. **Run eBay fetcher**
    ```bash
    python ebay/fetch_ebay.py
->>>>>>> d3068d77a1a0f40018644fcad4068c00ef670d46
    ```
    DoD: ≥100 rows in `item_source` table.
 
