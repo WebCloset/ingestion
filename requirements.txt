@@ -5,5 +5,3 @@ requests               # For eBay API calls
 python-dotenv          # Load environment variables from .env
 elasticsearch>=8       # Elasticsearch client
 tenacity               # Retry logic for API calls
-sentence-transformers
-scikit-learn
