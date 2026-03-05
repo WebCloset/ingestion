@@ -1,0 +1,30 @@
+[
+  {
+    "marketplace_code": "ebay",
+    "source_item_id": "demo-123",
+    "title": "Vintage Levi's 501",
+    "brand": "Levi's",
+    "condition": "used",
+    "price_cents": 4500,
+    "currency": "USD",
+    "image_url": "https://i.example/img.jpg",
+    "seller_url": "https://www.ebay.com/itm/123",
+    "size": "32x32",
+    "color": "blue",
+    "category": "jeans"
+  },
+  {
+    "marketplace_code": "ebay",
+    "source_item_id": "demo-124",
+    "title": "Levi's 501 Vintage",
+    "brand": "Levi's",
+    "condition": "used",
+    "price_cents": 4200,
+    "currency": "USD",
+    "image_url": "https://i.example/img2.jpg",
+    "seller_url": "https://www.ebay.com/itm/124",
+    "size": "32x32",
+    "color": "blue",
+    "category": "jeans"
+  }
+]
