@@ -455,17 +455,22 @@ def search_index():
     for hit in res['hits']['hits']:
         print(hit['_source'])
 
-items = get_source_items()
-#print(items)
-deduped = deduplicate_items(items)
-canonical_items = []
-for dedupe_key, deduped_value in deduped.items():
-    canonical_items.append(create_canonical_item(deduped_value))
-source_id_canonical_id = {}
-save_canonical_items(canonical_items, source_id_canonical_id)
-delete_index()
-mapping_index()
-index_canonical_products(deduped)
+
+def main():
+    items = get_source_items()
+    # print(items)
+    deduped = deduplicate_items(items)
+    canonical_items = []
+    for dedupe_key, deduped_value in deduped.items():
+        canonical_items.append(create_canonical_item(deduped_value))
+    source_id_canonical_id = {}
+    save_canonical_items(canonical_items, source_id_canonical_id)
+    delete_index()
+    mapping_index()
+    index_canonical_products(deduped)
+
+if __name__ == "__main__":
+    main()
 
 #search_index_new("Men Clothing")
 #search_index()
