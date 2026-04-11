@@ -207,55 +207,95 @@ def create_canonical_item(group) -> CanonicalItem:
     )
 
 def save_canonical_items(canonical_items, source_id_canonical_id):
+    unique_items = {}
+    for item in canonical_items:
+        unique_items[item.hash_key] = item
+
+    canonical_items = list(unique_items.values())
+
+    canonical_data = [
+        (
+            item.hash_key,
+            item.brand,
+            item.title,
+            item.category,
+            item.size_norm,
+            item.color_norm,
+            item.image_url,
+            item.min_price_cents,
+            item.currency
+        )
+        for item in canonical_items
+    ]
+
+    canonical_upsert_sql = """
+        INSERT INTO item_canonical 
+                        (hash_key, brand, title, category, size_norm, color_norm, 
+                         image_url, min_price_cents, currency)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (hash_key) DO UPDATE SET
+                        brand = EXCLUDED.brand,
+                        title = EXCLUDED.title,
+                        category = EXCLUDED.category,
+                        size_norm = EXCLUDED.size_norm,
+                        color_norm = EXCLUDED.color_norm,
+                        image_url = EXCLUDED.image_url,
+                        min_price_cents = EXCLUDED.min_price_cents,
+                        currency = EXCLUDED.currency
+                        RETURNING id, hash_key
+        """
+
+    link_query = """
+                    INSERT INTO item_links
+                    (canonical_id, source_id, is_primary, price_cents, seller_url)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (canonical_id, source_id) DO UPDATE SET
+                        price_cents = EXCLUDED.price_cents,
+                        seller_url = EXCLUDED.seller_url
+                    """
+
     with get_conn() as connection:
         with connection.cursor() as cur:
+            psycopg2.extras.execute_batch(cur, canonical_upsert_sql, canonical_data, page_size=100)
+            rows = cur.fetchall()
+            hash_to_id = {row[1]: row[0] for row in rows}
+
+            all_source_ids = [
+                source_id
+                for item in canonical_items
+                for source_id in item.source_ids
+            ]
+            cur.execute("""
+                    SELECT id, price_cents, seller_url
+                    FROM item_source
+                    WHERE id = ANY(%s)
+                """, (all_source_ids,))
+
+            source_map = {
+                row[0]: (row[1], row[2])
+                for row in cur.fetchall()
+            }
+
+            link_data = []
+
             for item in canonical_items:
-                # Insert canonical item
-                cur.execute("""
-                    INSERT INTO item_canonical 
-                    (hash_key, brand, title, category, size_norm, color_norm, 
-                     image_url, min_price_cents, currency)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    RETURNING id
-                """, (
-                    item.hash_key,
-                    item.brand,
-                    item.title,
-                    item.category,
-                    item.size_norm,
-                    item.color_norm,
-                    item.image_url,
-                    item.min_price_cents,
-                    item.currency
-                ))
+                canonical_id = hash_to_id.get(item.hash_key, None)
+                if canonical_id is None:
+                    continue
 
-                canonical_id = cur.fetchone()[0]
-
-                # Insert links to source items
                 for i, source_id in enumerate(item.source_ids):
-                    source_id_canonical_id[source_id] = canonical_id
-                    # Get source item details for this link
-                    cur.execute("""
-                        SELECT price_cents, seller_url 
-                        FROM item_source 
-                        WHERE id = %s
-                    """, (source_id,))
+                    if source_id in source_map:
+                        price_cents, seller_url = source_map[source_id]
 
-                    source_data = cur.fetchone()
-                    if source_data:
-                        price_cents, seller_url = source_data
-
-                        cur.execute("""
-                            INSERT INTO item_links 
-                            (canonical_id, source_id, is_primary, price_cents, seller_url)
-                            VALUES (%s, %s, %s, %s, %s)
-                        """, (
+                        link_data.append((
                             canonical_id,
                             source_id,
-                            i == 0,  # First item is primary
+                            i == 0,
                             price_cents,
                             seller_url
                         ))
+
+            psycopg2.extras.execute_batch(cur, link_query, link_data, page_size=100)
 
 
 items = [
