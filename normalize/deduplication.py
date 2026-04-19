@@ -328,9 +328,10 @@ def index_canonical_products(canonical_dict):
 
     # Execute bulk index
     if operations:
-        response = helpers.bulk(es, operations)
+        response, errors = helpers.bulk(es, operations)
         print("response: ", response)
-        if response['errors']:
+        print("errors: ", errors)
+        if errors:
             print(f"Errors during indexing: {response}")
         else:
             print(f"Indexed {len(items)} canonical items")
@@ -338,8 +339,10 @@ def index_canonical_products(canonical_dict):
 
 def mapping_index():
     """Create index from mapping JSON safely."""
-    print(os.getcwd())
-    with open("deduped_products.json", "r") as f:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(BASE_DIR, "normalize", "deduped_products.json")
+    print("file_path: ", file_path)
+    with open(file_path, "r") as f:
         mapping = json.load(f)
 
 
