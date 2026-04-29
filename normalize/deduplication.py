@@ -113,22 +113,37 @@ def deduplicate_items(items):
     canonical_groups = []
     assigned = [False] * len(items)
 
-    # Step 3: Compare embeddings
-    for i, emb in enumerate(embeddings):
+    sim_matrix = cosine_similarity(embeddings)
+
+    for i in range(len(items)):
         if assigned[i]:
             continue
+
         group = [items[i]]
         assigned[i] = True
 
-        for j in range(i+1, len(embeddings)):
-            if assigned[j]:
-                continue
-            sim = cosine_similarity([emb], [embeddings[j]])[0][0]
-            if sim >= SIMILARITY_THRESHOLD:
+        for j in range(i + 1, len(items)):
+            if not assigned[j] and sim_matrix[i][j] >= SIMILARITY_THRESHOLD:
                 group.append(items[j])
                 assigned[j] = True
-
         canonical_groups.append(group)
+
+    # Step 3: Compare embeddings
+    #for i, emb in enumerate(embeddings):
+    #    if assigned[i]:
+    #        continue
+    #    group = [items[i]]
+    #    assigned[i] = True
+
+    #    for j in range(i+1, len(embeddings)):
+    #        if assigned[j]:
+    #            continue
+    #        sim = cosine_similarity([emb], [embeddings[j]])[0][0]
+    #        if sim >= SIMILARITY_THRESHOLD:
+    #            group.append(items[j])
+    #            assigned[j] = True
+
+    #    canonical_groups.append(group)
 
     # Step 4: Create canonical keys
     result = {}
@@ -340,7 +355,8 @@ def index_canonical_products(canonical_dict):
 def mapping_index():
     """Create index from mapping JSON safely."""
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(BASE_DIR, "normalize", "deduped_products.json")
+    print("BASE_DIR: ", BASE_DIR)
+    file_path = os.path.join(BASE_DIR, "deduped_products.json")
     print("file_path: ", file_path)
     with open(file_path, "r") as f:
         mapping = json.load(f)
@@ -515,7 +531,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-#search_index_new("Men Clothing")
+#search_index_new("Nike")
 #search_index()
 
 #print(es.indices.get_mapping(index=es_index)[es_index]["mappings"]["properties"])
